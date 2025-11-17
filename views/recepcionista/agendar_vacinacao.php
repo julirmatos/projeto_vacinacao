@@ -15,11 +15,12 @@ try {
     $mensagem = "";
 
     // 🧩 3. Busca o idRecepcionista vinculado ao usuário logado
-    $sql_rec = "SELECT r.idRecepcionista
-                FROM recepcionista r
-                INNER JOIN funcionario f ON r.idFuncionario = f.idFuncionario
-                WHERE f.idUsuario = :idUsuario";
-
+    $sql_rec = "
+        SELECT r.idRecepcionista
+        FROM recepcionista r
+        INNER JOIN funcionario f ON r.idFuncionario = f.idFuncionario
+        WHERE f.idUsuario = :idUsuario
+    ";
     $stmt = $conn->prepare($sql_rec);
     $stmt->execute([':idUsuario' => $idUsuarioLogado]);
     $idRecepcionista = $stmt->fetchColumn();
@@ -30,22 +31,23 @@ try {
 
     // 🧩 4. Processa o formulário de agendamento
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
         $dataAgendamento = trim($_POST["dataAplicacao"] ?? '');
         $idPaciente = trim($_POST["idPaciente"] ?? '');
         $idVacina = trim($_POST["idVacina"] ?? '');
-        $idEnfermeiroUsuario = trim($_POST["idEnfermeiro"] ?? '');
+        $idEnfermeiro = trim($_POST["idEnfermeiro"] ?? '');
 
-        if ($dataAgendamento === '' || $idPaciente === '' || $idVacina === '' || $idEnfermeiroUsuario === '') {
+        if ($dataAgendamento === '' || $idPaciente === '' || $idVacina === '' || $idEnfermeiro === '') {
             $mensagem = "⚠️ Preencha todos os campos antes de enviar.";
         } else {
             try {
-                // Verifica duplicidade (mesma data, paciente e vacina)
+                // Verifica duplicidade
                 $sql_check = "
                     SELECT COUNT(*) 
                     FROM agendamento 
                     WHERE dataAgendamento = :data 
-                      AND idPaciente = :paciente 
-                      AND idVacina = :vacina
+                    AND idPaciente = :paciente 
+                    AND idVacina = :vacina
                 ";
                 $stmt = $conn->prepare($sql_check);
                 $stmt->execute([
@@ -58,16 +60,17 @@ try {
                 if ($existe > 0) {
                     $mensagem = "⚠️ Já existe um agendamento dessa vacina para este paciente nesta data.";
                 } else {
-                    // Inserção na tabela agendamento (realizado pela recepcionista)
+                    // Inserção na tabela agendamento (CORRIGIDO)
                     $sql_insert = "
-                        INSERT INTO agendamento (dataAgendamento, idPaciente, idVacina, idRecepcionista)
-                        VALUES (:data, :paciente, :vacina, :recepcionista)
+                        INSERT INTO agendamento (dataAgendamento, idPaciente, idVacina, idEnfermeiro, idRecepcionista)
+                        VALUES (:data, :paciente, :vacina, :enfermeiro, :recepcionista)
                     ";
                     $stmt = $conn->prepare($sql_insert);
                     $stmt->execute([
                         ':data' => $dataAgendamento,
                         ':paciente' => $idPaciente,
                         ':vacina' => $idVacina,
+                        ':enfermeiro' => $idEnfermeiro,
                         ':recepcionista' => $idRecepcionista
                     ]);
 
@@ -79,30 +82,33 @@ try {
         }
     }
 
-    // 🧩 5. Carrega listas de seleção
+    // 🧩 5. Carrega listas
+
+    // Pacientes
     $pacientes = $conn->query("
-        SELECT idUsuario, nomeUsuario 
-        FROM usuario 
-        WHERE tipo = 'paciente' 
-        ORDER BY nomeUsuario ASC
+        SELECT p.idPaciente, u.nomeUsuario
+        FROM paciente p
+        INNER JOIN usuario u ON p.idUsuario = u.idUsuario
+        ORDER BY u.nomeUsuario ASC
     ")->fetchAll(PDO::FETCH_ASSOC);
 
+    // Vacinas
     $vacinases = $conn->query("
         SELECT idVacina, nomeVacina 
         FROM vacina 
         ORDER BY nomeVacina ASC
     ")->fetchAll(PDO::FETCH_ASSOC);
 
+    // Enfermeiros
     $enfermeiros = $conn->query("
-        SELECT u.idUsuario, u.nomeUsuario
-        FROM usuario u
-        INNER JOIN funcionario f ON u.idUsuario = f.idUsuario
-        WHERE LOWER(f.perfilFuncionario) = 'enfermeiro'
+        SELECT e.idEnfermeiro, u.nomeUsuario
+        FROM enfermeiro e
+        INNER JOIN funcionario f ON e.idFuncionario = f.idFuncionario
+        INNER JOIN usuario u ON f.idUsuario = u.idUsuario
         ORDER BY u.nomeUsuario ASC
     ")->fetchAll(PDO::FETCH_ASSOC);
 
 } catch (Exception $e) {
-    // Captura erros de sessão, conexão ou consultas
     $mensagem = "❌ Erro: " . $e->getMessage();
 }
 ?>
@@ -192,11 +198,6 @@ button:hover {
     background: linear-gradient(90deg,#005fcc,#009ee3);
     transform: translateY(-3px);
 }
-@media (max-width: 480px) {
-    form { padding: 15px; }
-    label { font-size: 12px; }
-    input, select, button { font-size: 13px; }
-}
 </style>
 </head>
 <body>
@@ -211,7 +212,7 @@ button:hover {
     <select id="idPaciente" name="idPaciente" required>
         <option value="">Selecione o paciente...</option>
         <?php foreach ($pacientes as $p): ?>
-            <option value="<?= htmlspecialchars($p['idUsuario']) ?>">
+            <option value="<?= htmlspecialchars($p['idPaciente']) ?>">
                 <?= htmlspecialchars($p['nomeUsuario']) ?>
             </option>
         <?php endforeach; ?>
@@ -231,13 +232,13 @@ button:hover {
     <select id="idEnfermeiro" name="idEnfermeiro" required>
         <option value="">Selecione o enfermeiro...</option>
         <?php foreach ($enfermeiros as $e): ?>
-            <option value="<?= htmlspecialchars($e['idUsuario']) ?>">
+            <option value="<?= htmlspecialchars($e['idEnfermeiro']) ?>">
                 <?= htmlspecialchars($e['nomeUsuario']) ?>
             </option>
         <?php endforeach; ?>
     </select>
 
-    <button type="submit">Agendar </button>
+    <button type="submit">Agendar</button>
 </form>
 
 <?php if ($mensagem): ?>
@@ -250,4 +251,3 @@ button:hover {
 
 </body>
 </html>
-

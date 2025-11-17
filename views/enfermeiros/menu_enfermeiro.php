@@ -1,15 +1,14 @@
 <?php
 session_start();
 
-// Garante que o paciente está logado
+// Garante que o enfermeiro está logado
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../../views/vacinacao/consultar.php");
+    header("Location: ../../views/auth/login_perfil_funcionario.php");
     exit;
 }
 
 $nome = $_SESSION['nomeUsuario'];
 $idUsuario = $_SESSION['usuario_id'];
-
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -44,38 +43,44 @@ $idUsuario = $_SESSION['usuario_id'];
             font-size: 1rem;
         }
 
+        /* === GRID DUAS COLUNAS + MENOR LARGURA === */
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            width: 90%;
-            max-width: 800px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 35px;
+            width: 70%;
+            max-width: 850px;
         }
 
         .card {
             background: #fff;
             border-radius: 20px;
-            padding: 30px;
+            padding: 30px 20px;
             box-shadow: 0 8px 15px rgba(0,0,0,0.2);
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
+            height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-6px);
             box-shadow: 0 12px 25px rgba(0,0,0,0.25);
         }
 
         .card h3 {
             color: #2C3E50;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
         }
 
         .card p {
             color: #555;
             font-size: 0.95rem;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .card a {
@@ -96,7 +101,7 @@ $idUsuario = $_SESSION['usuario_id'];
         .menu-buttons {
             display: flex;
             gap: 20px;
-            margin-top: 40px;
+            margin-top: 50px;
         }
 
         .menu-buttons a {
@@ -115,25 +120,13 @@ $idUsuario = $_SESSION['usuario_id'];
             background: linear-gradient(90deg, #0056b3, #0096FF);
         }
 
-        .menu-buttons a.sair {
-            background: linear-gradient(90deg, #0056b3, #0096FF);
-        }
-
-        .menu-buttons a.sair:hover {
-            background: linear-gradient(90deg, #004080, #0080FF);
-        }
-
-        @media (max-width: 500px) {
-            header h1 {
-                font-size: 1.5rem;
+        @media (max-width: 800px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+                width: 90%;
             }
             .card {
-                padding: 20px;
-            }
-            .menu-buttons {
-                flex-direction: column;
-                width: 80%;
-                align-items: center;
+                height: auto;
             }
         }
     </style>
@@ -142,29 +135,37 @@ $idUsuario = $_SESSION['usuario_id'];
 
     <header>
         <h1>Bem-vindo(a), <?= htmlspecialchars($nome) ?>!</h1>
-        
         <p>Escolha uma das opções abaixo:</p>
     </header>
 
     <section class="cards-container">
-     <!-- Card 1 -->
         <div class="card" onclick="window.location.href='../../views/vacinacao/consultar.php'">
-            <h3>Consultar Vacinação Pacientes</h3>
-            <p>Vejam as Vacinas Aplicadas.</p>
-            <a href="/views/vacinacao/consultar.php">Acessar</a>   
-    </div>
-    <!-- Card 2 -->
+            <h3>Consultar Vacinação Geral</h3>
+            <p>Consulte todas as vacinas aplicadas.</p>
+            <a href="/views/vacinacao/consultar.php">Consultar</a>
+        </div>
+
         <div class="card" onclick="window.location.href='../../views/vacinas/consultar_vacinas.php'">
             <h3>Consultar Vacinas</h3>
-            <p>Doses ,Lote e Vencimento.</p>
-            <a href="/views/enfermeiros/consultar_vacinas.php">Acessar</a>
+            <p>Verifique doses, lotes e datas de vencimento.</p>
+            <a href="/views/enfermeiros/consultar_vacinas.php">Consultar</a>
         </div>
-        
+
+        <div class="card" onclick="window.location.href='../../views/vacinacao/consultar_vacinacao_paciente.php'">
+            <h3>Consultar Vacinas Aplicadas por Paciente</h3>
+            <p>Consulte histórico vacinal individual.</p>
+            <a href="/views/enfermeiros/consultar_vacinacao_paciente.php">Consultar</a>
+        </div>
+
+        <div class="card" onclick="window.location.href='../../views/enfermeiros/agendamentos_dia.php'">
+            <h3>Agendamentos do Dia</h3>
+            <p>Visualize todos os agendamentos de hoje.</p>
+            <a href="/views/enfermeiros/agendamentos_dia.php">Ver Agenda</a>
+        </div>
     </section>
 
     <div class="menu-buttons">
         <a href="/public/index.php">🏠 Início</a>
-        
     </div>
 
 </body>
