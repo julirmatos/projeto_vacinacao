@@ -4,11 +4,11 @@ require_once __DIR__ . '/../Models/Usuario.php';
 
 class EnfermeiroController
 {
-    private $dao;
+    private $EnfermeiroDao;
 
     public function __construct()
     {
-        $this->dao = new EnfermeiroDAO();
+        $this->EnfermeiroDao = new EnfermeiroDAO();
     }
 
     /**
@@ -16,7 +16,7 @@ class EnfermeiroController
      */
     public function listar()
     {
-        return $this->dao->listar();
+        return $this->EnfermeiroDao->listar();
     }
 
     /**
@@ -27,7 +27,7 @@ class EnfermeiroController
         if (!is_numeric($id)) {
             throw new Exception("ID inválido para consulta de enfermeiro.");
         }
-        return $this->dao->consultar($id);
+        return $this->EnfermeiroDao->consultar($id);
     }
 
     /**
@@ -50,7 +50,7 @@ class EnfermeiroController
         $enfermeiro->setSenha($dados['senha']);
         $enfermeiro->setTipo('enfermeiro');
 
-        return $this->dao->cadastrar($enfermeiro);
+        return $this->EnfermeiroDao->cadastrar($enfermeiro);
     }
 
     /**
@@ -62,7 +62,7 @@ class EnfermeiroController
             throw new Exception("ID inválido para alteração.");
         }
 
-        $enfermeiroExistente = $this->dao->consultar($id);
+        $enfermeiroExistente = $this->EnfermeiroDao->consultar($id);
         if (!$enfermeiroExistente) {
             throw new Exception("Enfermeiro não encontrado.");
         }
@@ -74,7 +74,7 @@ class EnfermeiroController
         $enfermeiroExistente->setEndereco($dados['endereco'] ?? '');
         $enfermeiroExistente->setDataNascimento($dados['dataNascimento'] ?? null);
 
-        return $this->dao->alterar($enfermeiroExistente);
+        return $this->EnfermeiroDao->alterar($enfermeiroExistente);
     }
 
     /**
@@ -86,7 +86,7 @@ class EnfermeiroController
             throw new Exception("ID inválido para exclusão.");
         }
 
-        return $this->dao->excluir($id);
+        return $this->EnfermeiroDao->excluir($id);
     }
 
     /**

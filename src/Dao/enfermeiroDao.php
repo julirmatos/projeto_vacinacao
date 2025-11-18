@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../Database/Conexao.php';
 require_once __DIR__ . '/../Models/Usuario.php';
+require_once __DIR__ . '/../Models/Enfermeiro.php';
+require_once __DIR__ . '/../Models/EnfermeiroDao.php';
 
 class EnfermeiroDAO
 {
