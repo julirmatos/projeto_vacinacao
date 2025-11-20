@@ -110,7 +110,7 @@ tr:hover {
 <table>
 <thead>
 <tr>
-    <th>ID</th>
+    
     <th>Nome</th>
     <th>CPF</th>
     <th>Data de Nascimento</th>
@@ -123,7 +123,7 @@ tr:hover {
 <tbody>
 <?php foreach ($pacientes as $p): ?>
 <tr>
-    <td><?= htmlspecialchars($p['idUsuario']) ?></td>
+    
     <td><?= htmlspecialchars($p['nomeUsuario']) ?></td>
     <td><?= htmlspecialchars($p['cpfUsuario']) ?></td>
     <td><?= htmlspecialchars(date('d/m/Y', strtotime($p['dataNascimento']))) ?></td>

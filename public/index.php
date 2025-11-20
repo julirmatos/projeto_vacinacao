@@ -155,7 +155,7 @@
 
     <footer>
         <div class="copyright">
-            Sistema Vacinação - I.F.S.P - GRU - © 2025 - Todos os direitos reservados
+            Sistema Vacinação - I.F.S.P - GRU - © 2025 - Desenvolvido por Juliana Matos 
         </div>
     </footer>
 
