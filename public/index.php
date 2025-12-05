@@ -16,7 +16,7 @@
             margin: 0;
         }
 
-        /* 🔹 Cabeçalho */
+        
         header {
             background-color: #007BFF;
             color: white;
@@ -34,7 +34,7 @@
             text-align: center;
         }
 
-        /* 🔹 Container centralizado */
+        
         .main-content {
             flex: 1;
             display: flex;
@@ -50,7 +50,7 @@
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
-            margin-bottom: 60px; /* espaço visual antes do footer */
+            margin-bottom: 60px; 
         }
 
         .card {
